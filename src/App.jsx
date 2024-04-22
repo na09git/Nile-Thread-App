@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 
-import Feed from './pages/feed'
+import Feed from './pages/Feed'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import ThreadPage from './pages/ThreadPage'

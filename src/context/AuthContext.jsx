@@ -4,7 +4,7 @@ import { account, COLLECTION_ID_PROFILES, database, DEV_DB_ID } from "../appwrit
 
 const AuthContext = createContext()
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
 
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
@@ -16,36 +16,36 @@ export const AuthProvider = ({children}) => {
     }, [])
 
     const getUserOnLoad = async () => {
-        try{
+        try {
             let accountDetails = await account.get();
-            
+            console.log('accountDetails:', accountDetails)
 
             const profile = await database.getDocument(DEV_DB_ID, COLLECTION_ID_PROFILES, accountDetails.$id);
             console.log('profile:', profile)
 
-            accountDetails['profile'] = profile  
+            accountDetails['profile'] = profile
             console.log(accountDetails)
 
 
             setUser(accountDetails)
-        }catch(error){
-            
+        } catch (error) {
+
         }
         setLoading(false)
     }
 
     const loginUser = async (userInfo) => {
 
-        try{
+        try {
             const response = await account.createEmailSession(
                 userInfo.email, userInfo.password
-                ) 
-            
-            const accountDetails =  await account.get()
-            
+            )
+
+            const accountDetails = await account.get()
+
             setUser(accountDetails)
 
-        }catch(error){
+        } catch (error) {
             console.log('ERROR:', error)
         }
     }
@@ -65,11 +65,15 @@ export const AuthProvider = ({children}) => {
 
     return (
         <AuthContext.Provider value={contextData}>
-            {loading ? <p>Loading...</p> : children}
+            {loading ?
+                <div className="container pt-10  mx-auto max-w-[600px]">
+                    <p style={{ fontSize: '1.5rem' }}>Loading...</p>
+                </div>
+                : children}
         </AuthContext.Provider>
     )
 }
 
-export const useAuth = ()=> {return useContext(AuthContext)}
+export const useAuth = () => { return useContext(AuthContext) }
 
 export default AuthContext;

@@ -1,56 +1,57 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Thread from '../components/Thread'
 import { useParams } from 'react-router'
 import { database, DEV_DB_ID, COLLECTION_ID_THREADS, COLLECTION_ID_COMMENTS } from '../appwriteConfig'
-import {ID, Query} from 'appwrite'
+import { ID, Query } from 'appwrite'
 import { useAuth } from '../context/AuthContext'
 import Comment from '../components/Comment'
 import ThreadForm from '../components/ThreadForm'
 
 const ThreadPage = () => {
-    const {id} = useParams()
-    const [loading, setLoading] = useState(true)
+  const { id } = useParams()
+  const [loading, setLoading] = useState(true)
 
-    const [thread, setThread] = useState(null)
+  const [thread, setThread] = useState(null)
 
-    const [comments, setComments] = useState([])
+  const [comments, setComments] = useState([])
 
-    useEffect(() => {
-        getThread()
-        getComments()
-    }, [id])
-    
-    const getThread = async () => {
-        const response = await database.getDocument(DEV_DB_ID, COLLECTION_ID_THREADS, id)
-        setThread(response)
-        setLoading(false)
-    }
+  useEffect(() => {
+    getThread()
+    getComments()
+  }, [id])
 
-    const getComments = async () => {
-      const response = await database.listDocuments(
-        DEV_DB_ID, 
-        COLLECTION_ID_THREADS,
-        [
-          Query.orderDesc('$createdAt'),
-          Query.equal("parent_id", [id]),
-        ]
-        )
-        setComments(response.documents)
-    }
+  const getThread = async () => {
+    const response = await database.getDocument(DEV_DB_ID, COLLECTION_ID_THREADS, id)
+    setThread(response)
+    setLoading(false)
+    console.log(response)
+  }
 
-    if(loading) return
+  const getComments = async () => {
+    const response = await database.listDocuments(
+      DEV_DB_ID,
+      COLLECTION_ID_THREADS,
+      [
+        Query.orderDesc('$createdAt'),
+        Query.equal("parent_id", [id]),
+      ]
+    )
+    setComments(response.documents)
+  }
+
+  if (loading) return
 
   return (
     <>
-      <Thread thread={thread}/>
+      <Thread thread={thread} />
 
       <div className="p-4">
-            <ThreadForm setThreads={setComments} thread_id={id}/>
+        <ThreadForm setThreads={setComments} thread_id={id} />
       </div>
 
       <div>
         {comments.map(comment => (
-          <Thread key={comment.$id} thread={comment} setThreads={setComments}/>
+          <Thread key={comment.$id} thread={comment} setThreads={setComments} />
         ))}
       </div>
     </>

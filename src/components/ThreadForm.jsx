@@ -7,81 +7,77 @@ import { useAuth } from '../context/AuthContext'
 const ThreadForm = ({ setThreads, thread_id }) => {
 
     const [threadBody, setThreadBody] = useState('')
-    const [theadImg, setThreadImg] = useState(null)
+    const [threadImg, setThreadImg] = useState(null)
     const fileRef = useRef(null)
 
     const { user } = useAuth()
 
     const handleThreadSubmit = async (e) => {
         e.preventDefault()
-
+        console.log("POST is Clicked")
 
         if (!user || !user.$id) {
+            console.log("User Does not Exist, Please make sure there is Registered  User ")
+
             return;
         }
 
-        const payload = {
-            "parent_id": thread_id,
-            "owner_id": user.$id,
-            "body": threadBody,
-            "image": theadImg
-        }
+        const formData = new FormData();
+        formData.append('parent_id', thread_id);
+        formData.append('owner_id', user.$id);
+        formData.append('body', threadBody);
+        formData.append('image', threadImg);
 
         const response = await database.createDocument(
             DEV_DB_ID,
             COLLECTION_ID_THREADS,
             ID.unique(),
-            payload
-        )
-
+            formData
+        );
 
         if (thread_id) {
-            updateCommentCount()
+            updateCommentCount();
         }
 
-        setThreads(prevState => [response, ...prevState])
-        setThreadBody('')
-        setThreadImg(null)
-    }
+        setThreads(prevState => [response, ...prevState]);
+        setThreadBody('');
+        setThreadImg(null);
+    };
 
     const updateCommentCount = async () => {
-        //Get thread comments
-
         const threadResponse = await database.listDocuments(
             DEV_DB_ID,
             COLLECTION_ID_THREADS,
             [
                 Query.equal("parent_id", [thread_id]),
             ]
-        )
+        );
 
-
-        const comments = threadResponse.documents
-        console.log('comments:', comments.length)
+        const comments = threadResponse.documents;
+        console.log('comments:', comments.length);
 
         const payload = {
             "comments": comments.length,
-
-        }
+        };
 
         const response = await database.updateDocument(
             DEV_DB_ID,
             COLLECTION_ID_THREADS,
             thread_id,
             payload
-        )
-    }
+        );
+    };
 
     const handleClick = async (e) => {
-        fileRef.current.click()
-    }
+        fileRef.current.click();
+    };
 
     const handleFileChange = async (e) => {
         const fileObj = e.target.files && e.target.files[0];
-        console.log('fileObj:', fileObj)
+        console.log('fileObj:', fileObj);
 
         if (!fileObj) {
-            return
+            return;
         }
 
         const response = await storage.createFile(
@@ -91,8 +87,8 @@ const ThreadForm = ({ setThreads, thread_id }) => {
         );
 
         const imagePreview = storage.getFilePreview(BUCKET_ID_IMAGES, response.$id);
-        setThreadImg(imagePreview.href)
-    }
+        setThreadImg(imagePreview.href);
+    };
 
     return (
         <form onSubmit={handleThreadSubmit}>
@@ -103,10 +99,8 @@ const ThreadForm = ({ setThreads, thread_id }) => {
                 placeholder="Say something..."
                 value={threadBody}
                 onChange={(e) => { setThreadBody(e.target.value) }}
-            >
-            </textarea>
-
-            <img src={theadImg} />
+            />
+            <img src={threadImg} />
 
             <input
                 style={{ display: "none" }}
@@ -120,7 +114,7 @@ const ThreadForm = ({ setThreads, thread_id }) => {
                 <input className="bg-white cursor-pointer text-black py-2 px-4 border text-sm border-black rounded" type="submit" value="Post" />
             </div>
         </form>
-    )
-}
+    );
+};
 
-export default ThreadForm
+export default ThreadForm;
