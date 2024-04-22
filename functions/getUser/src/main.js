@@ -1,4 +1,5 @@
-const sdk = require('node-appwrite');
+import { Client, Users } from 'node-appwrite';
+
 
 // This is your Appwrite function
 // It's executed each time we get a request
