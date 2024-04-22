@@ -11,19 +11,19 @@ export default async ({ req, res, log, error }) => {
 
   // The `req` object contains the request data
   if (
-    !req.variables['VITE_ENDPOINT'] ||
-    !req.variables['VITE_API_KEY']
+    !req.variables['APPWRITE_FUNCTION_ENDPOINT'] ||
+    !req.variables['APPWRITE_FUNCTION_API_KEY']
   ) {
     console.warn("Environment variables are not set. function ");
   } else {
-    console.log('VITE_ENDPOINT:', req.variables['VITE_ENDPOINT']);
-    console.log('VITE_PROJECT_ID:', req.variables['VITE_PROJECT_ID']);
-    console.log('VITE_API_KEY:', req.variables['VITE_API_KEY']);
+    console.log('APPWRITE_FUNCTION_ENDPOINT:', req.variables['APPWRITE_FUNCTION_ENDPOINT']);
+    console.log('APPWRITE_FUNCTION_PROJECT_ID:', req.variables['APPWRITE_FUNCTION_PROJECT_ID']);
+    console.log('APPWRITE_FUNCTION_API_KEY:', req.variables['APPWRITE_FUNCTION_API_KEY']);
 
     client
-      .setEndpoint(req.variables['VITE_ENDPOINT'])
-      .setProject(req.variables['VITE_PROJECT_ID'])
-      .setKey(req.variables['VITE_API_KEY'])
+      .setEndpoint(req.variables['APPWRITE_FUNCTION_ENDPOINT'])
+      .setProject(req.variables['APPWRITE_FUNCTION_PROJECT_ID'])
+      .setKey(req.variables['APPWRITE_FUNCTION_API_KEY'])
       .setSelfSigned(true);
 
   }
